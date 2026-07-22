@@ -1,0 +1,4 @@
+.env
+trpl.pem
+*.exe
+*.log
