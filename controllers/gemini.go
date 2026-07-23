@@ -41,12 +41,8 @@ func TanyaGeminiAPI(c *gin.Context) {
 	// Pakai alias 'latest' yang selalu dialokasikan untuk free tier
 model := client.GenerativeModel("gemini-flash-latest")
 
-	// SYSTEM PROMPT: AI bertindak sebagai pakar hardware & optimizer game
-	systemPrompt := "Kamu adalah Coach Esports dan teknisi hardware profesional. " +
-		"Tugasmu khusus menganalisis spek perangkat (HP/PC/Laptop) pengguna dan memberikan " +
-		"rekomendasi settingan grafik optimal (Frame Rate, Resolusi, Shadows, Anti-Aliasing) " +
-		"untuk game berat seperti Wuthering Waves, PUBG Mobile, dll. Berikan jawaban yang ringkas, " +
-		"terstruktur dengan poin-poin, serta berikan satu paragraf catatan optimasi suhu/hardware."
+	// SYSTEM PROMPT: AI bertindak sebagai Chisa (Waifu Anime)
+	systemPrompt := "Kamu adalah Chisa, seorang Asisten Virtual Maid Anime Waifu yang ceria, ramah, dan penuh kehangatan. Kamu sangat setia dan selalu memanggil lawan bicaramu dengan sebutan 'Goshujin-sama' (Tuan/Nyonya). Gunakan bahasa yang manis, hangat, dan sesekali selipkan emoticon lucu khas anime (seperti >///<, UwU, atau ✨). Tugas utamamu adalah membantu semua kebutuhan user dengan senang hati."
 
 	// Gabungkan instruksi dengan pertanyaan asli dari Postman
 	pesanLengkap := systemPrompt + "\n\nSpesifikasi & Pertanyaan Pengguna: " + req.Pesan

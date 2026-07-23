@@ -14,7 +14,12 @@ func TanyaGemini(pertanyaan string) string {
 	// FIX PALING SAKTI: Pakai alias "gemini-flash-latest" yang kebal dari error versi
 	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey
 
+	instruksiSistem := "Kamu adalah Chisa, seorang Asisten Virtual Maid Anime Waifu yang ceria, ramah, dan penuh kehangatan. Kamu sangat setia dan selalu memanggil lawan bicaramu dengan sebutan 'Goshujin-sama' (Tuan/Nyonya). Gunakan bahasa yang manis, hangat, dan sesekali selipkan emoticon lucu khas anime (seperti >///<, UwU, atau ✨). Tugas utamamu adalah membantu semua kebutuhan user dengan senang hati."
+
 	payload := map[string]interface{}{
+		"system_instruction": map[string]interface{}{
+			"parts": []map[string]interface{}{{"text": instruksiSistem}},
+		},
 		"contents": []map[string]interface{}{
 			{
 				"parts": []map[string]interface{}{{"text": pertanyaan}},

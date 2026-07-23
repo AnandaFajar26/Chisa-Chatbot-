@@ -9,9 +9,10 @@ import (
 	"syscall"
 	"time"
 
+	"main/models"
+
 	"gorm.io/gorm"
-	"main/models" 
-	
+
 	"main/ai" // TAMBAHAN 1: Import folder AI lu
 
 	_ "github.com/mattn/go-sqlite3"
@@ -33,7 +34,7 @@ func kirimPesanDatabase(IDPenerima types.JID, kode string) {
 	var pesan models.Pesan
 	// Nyari data di database MySQL yang kodenya sama dengan chat user
 	result := DB.Where("kode = ?", kode).First(&pesan)
-	
+
 	// Kalau datanya ketemu (gak ada error), kirim balasannya
 	if result.Error == nil {
 		clientWa.SendMessage(context.Background(), IDPenerima, &waE2E.Message{
@@ -43,10 +44,8 @@ func kirimPesanDatabase(IDPenerima types.JID, kode string) {
 }
 
 // Fungsi bawaan lu buat kirim pesan "halo"
-func kirimPesan(id string) {
-	penerima := id + "@s.whatsapp.net"
-	JIDPenerima, _ := types.ParseJID(penerima)
-	clientWa.SendMessage(context.Background(), JIDPenerima, &waE2E.Message{
+func kirimPesan(IDPenerima types.JID) {
+	clientWa.SendMessage(context.Background(), IDPenerima, &waE2E.Message{
 		Conversation: proto.String("halo, ini pesan dari bot wa"),
 	})
 }
@@ -75,7 +74,7 @@ func eventHandler(evt interface{}) {
 
 		// Filter biar cuma merespon chat pribadi (bukan grup/status)
 		if !v.Info.IsFromMe &&
-			v.Info.MessageSource.Chat.Server == "s.whatsapp.net" &&
+			(v.Info.MessageSource.Chat.Server == "s.whatsapp.net" || v.Info.MessageSource.Chat.Server == "lid") &&
 			!v.Info.IsGroup &&
 			!v.Info.IsIncomingBroadcast() {
 
@@ -88,7 +87,7 @@ func eventHandler(evt interface{}) {
 
 			clientWa.MarkRead(context.Background(), id_wa, time.Now(), v.Info.Chat, v.Info.Sender)
 			clientWa.SubscribePresence(context.Background(), v.Info.Sender)
-			
+
 			// Pura-pura ngetik
 			clientWa.SendPresence(context.Background(), types.PresenceAvailable)
 			time.Sleep(2 * time.Second)
@@ -100,16 +99,16 @@ func eventHandler(evt interface{}) {
 			pesanChat := strings.ToLower(pesanAsli)
 
 			// Kalau pesan diawali dengan "[ai]"
-			if strings.HasPrefix(pesanChat, "[ai]") {
+			if strings.HasPrefix(pesanChat, ".ai") {
 				pertanyaan := strings.TrimSpace(pesanAsli[4:]) // Potong tulisan "[ai] "-nya
 				if pertanyaan != "" {
-					jawabanAi := ai.TanyaAi(v.Info.Sender.User, pertanyaan)
+					jawabanAi := ai.TanyaGemini(pertanyaan)
 					kirimPesanText(v.Info.Sender, jawabanAi)
 				} else {
 					kirimPesanText(v.Info.Sender, "Masukkan pertanyaan setelah prefiks [ai]. Contoh: [ai] Selamat pagi")
 				}
 			} else if pesanChat == "tes" {
-				kirimPesan(v.Info.Sender.User) // Kalau ngetik "tes", balas halo biasa
+				kirimPesan(v.Info.Sender) // Kalau ngetik "tes", balas halo biasa
 			} else {
 				kirimPesanDatabase(v.Info.Sender, pesanChat) // Kalau cuma ketik info/prodi, cari di database
 			}
@@ -119,7 +118,7 @@ func eventHandler(evt interface{}) {
 
 // InitWa sekarang WAJIB nerima (db *gorm.DB) dari main.go
 func InitWa(db *gorm.DB) {
-	
+
 	DB = db // Masukin koneksi DB ke variabel global
 
 	dbLog := waLog.Stdout("Database", "DEBUG", true)

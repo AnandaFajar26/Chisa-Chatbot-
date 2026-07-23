@@ -4,6 +4,7 @@ import (
 	"log"
 	"main/controllers"
 	"main/models"
+	"main/wa"
 	"os"
 	"time"
 
@@ -76,9 +77,10 @@ func main() {
 
 	// Route endpoints publik
 	r.POST("/login", authMiddleware.LoginHandler)
-	
+
 	// ---> INI ENDPOINT UTAMA UNTUK UAS KAMU <---
 	r.POST("/tanya-gemini", controllers.TanyaGeminiAPI)
+	r.POST("/kirim-wa", controllers.KirimWA)
 
 	auth := r.Group("/backend")
 	auth.Use(authMiddleware.MiddlewareFunc())
@@ -107,6 +109,8 @@ func main() {
 		port = "8111"
 	}
 
+	// Jalankan WhatsApp Bot di background (Goroutine)
+	go wa.InitWa(db)
 	// Jalankan Server Gin
 	log.Println("Server berjalan di port: " + port)
 	if err := r.Run(":" + port); err != nil {
