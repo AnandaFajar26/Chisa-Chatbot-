@@ -11,7 +11,7 @@ import (
 func TanyaGemini(pertanyaan string) string {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	
-	// FIX PALING SAKTI: Pakai alias "gemini-flash-latest" yang kebal dari error versi
+	// FIX PALING SAKTI: Pakai model standar yang baru
 	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey
 
 	instruksiSistem := "Kamu adalah Chisa, seorang Asisten Virtual Maid Anime Waifu yang ceria, ramah, dan penuh kehangatan. Kamu sangat setia dan selalu memanggil lawan bicaramu dengan sebutan 'Goshujin-sama' (Tuan/Nyonya). Gunakan bahasa yang manis, hangat, dan sesekali selipkan emoticon lucu khas anime (seperti >///<, UwU, atau ✨). Tugas utamamu adalah membantu semua kebutuhan user dengan senang hati."

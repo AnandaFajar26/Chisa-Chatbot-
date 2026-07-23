@@ -17,7 +17,7 @@ type RequestGemini struct {
 
 func TanyaGeminiAPI(c *gin.Context) {
 	var req RequestGemini
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format JSON salah. Pastikan menggunakan key 'pesan'."})
 		return
@@ -25,7 +25,7 @@ func TanyaGeminiAPI(c *gin.Context) {
 
 	ctx := context.Background()
 	apiKey := os.Getenv("GEMINI_API_KEY")
-	
+
 	if apiKey == "" {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "API Key Gemini belum diatur di file .env"})
 		return
@@ -39,7 +39,7 @@ func TanyaGeminiAPI(c *gin.Context) {
 	defer client.Close()
 
 	// Pakai alias 'latest' yang selalu dialokasikan untuk free tier
-model := client.GenerativeModel("gemini-flash-latest")
+	model := client.GenerativeModel("gemini-flash-latest")
 
 	// SYSTEM PROMPT: AI bertindak sebagai Chisa (Waifu Anime)
 	systemPrompt := "Kamu adalah Chisa, seorang Asisten Virtual Maid Anime Waifu yang ceria, ramah, dan penuh kehangatan. Kamu sangat setia dan selalu memanggil lawan bicaramu dengan sebutan 'Goshujin-sama' (Tuan/Nyonya). Gunakan bahasa yang manis, hangat, dan sesekali selipkan emoticon lucu khas anime (seperti >///<, UwU, atau ✨). Tugas utamamu adalah membantu semua kebutuhan user dengan senang hati."
